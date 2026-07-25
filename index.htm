@@ -7,18 +7,39 @@
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
         h1, h2 { color: #333; }
         .grid { display: flex; gap: 20px; flex-wrap: wrap; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 200px; text-align: center; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 200px; text-align: center; position: relative; }
         .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; }
         .section { margin-bottom: 40px; }
+        .form-container, .search-container { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: inline-block; }
+        input, select { padding: 8px; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 220px; }
+        button { padding: 8px 15px; border-radius: 4px; border: 1px solid #ccc; background-color: #007bff; color: white; cursor: pointer; }
+        button#resetButton { background-color: #6c757d; }
+        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <h1>Ma Collection de Schtroumpfs Schleich</h1>
     
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="searchInput" placeholder="Rechercher une figurine..." style="padding: 8px; width: 250px; border-radius: 4px; border: 1px solid #ccc;">
-        <button id="resetButton" style="padding: 8px 15px; border-radius: 4px; border: 1px solid #ccc; background-color: #fff; cursor: pointer;">Réinitialiser</button>
+    <!-- Barre de recherche -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Rechercher une figurine...">
+        <button id="resetButton">Réinitialiser</button>
+    </div>
+
+    <!-- Formulaire d'ajout -->
+    <div class="form-container">
+        <h3>Ajouter une figurine</h3>
+        <form id="addForm">
+            <input type="text" id="nom" placeholder="Nom (ex: 20003 Schtroumpf...)" required><br>
+            <input type="text" id="serie" placeholder="Série" required><br>
+            <input type="url" id="image" placeholder="URL de l'image" required><br>
+            <select id="categorie">
+                <option value="possedees">Possédée</option>
+                <option value="recherches">Recherchée</option>
+            </select><br>
+            <button type="submit">Ajouter</button>
+        </form>
     </div>
 
     <div class="section">
@@ -32,57 +53,100 @@
     </div>
 
 <script>
-    fetch('./data.json')
-        .then(response => response.json())
-        .then(data => {
-            const afficherFigurines = (liste, elementId, filtre = '') => {
-                const conteneur = document.getElementById(elementId);
-                
-                const listeFiltree = liste.filter(fig => 
-                    fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
-                    fig.serie.toLowerCase().includes(filtre.toLowerCase())
-                );
+    // Fonction pour charger les données (depuis le JSON initial ou le stockage local)
+    const chargerDonnees = async () => {
+        let dataStockee = localStorage.getItem('schtroumpfs_data');
+        if (dataStockee) {
+            return JSON.parse(dataStockee);
+        } else {
+            try {
+                const response = await fetch('./data.json');
+                const data = await response.json();
+                localStorage.setItem('schtroumpfs_data', JSON.stringify(data));
+                return data;
+            } catch (error) {
+                console.error('Erreur lors du chargement :', error);
+                return { possedees: [], recherches: [] };
+            }
+        }
+    };
 
-                if (listeFiltree.length === 0) {
-                    conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
-                    return;
-                }
-                
-                let htmlContent = '';
-                listeFiltree.forEach(fig => {
-                    htmlContent += `
-                        <div class="card">
-                            <img src="${fig.image}" alt="${fig.nom}">
-                            <h3>${fig.nom}</h3>
-                            <p>${fig.serie}</p>
-                        </div>
-                    `;
-                });
-                conteneur.innerHTML = htmlContent;
-            };
+    let collectionData = { possedees: [], recherches: [] };
 
-            const initialiserAffichage = (filtre = '') => {
-                afficherFigurines(data.possedees || [], 'grid-possedees', filtre);
-                afficherFigurines(data.recherches || [], 'grid-recherches', filtre);
-            };
+    const afficherFigurines = (filtre = '') => {
+        ['possedees', 'recherches'].forEach(cat => {
+            const conteneur = document.getElementById(`grid-${cat}`);
+            const liste = collectionData[cat] || [];
+            
+            const listeFiltree = liste.filter(fig => 
+                fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
+                fig.serie.toLowerCase().includes(filtre.toLowerCase())
+            );
 
-            // Affichage initial
-            initialiserAffichage();
-
-            // Gestion de la recherche en direct
-            const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('input', (e) => {
-                initialiserAffichage(e.target.value);
+            if (listeFiltree.length === 0) {
+                conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
+                return;
+            }
+            
+            let htmlContent = '';
+            listeFiltree.forEach(fig => {
+                // On retrouve l'index réel dans le tableau global pour pouvoir supprimer
+                const indexReel = liste.indexOf(fig);
+                htmlContent += `
+                    <div class="card">
+                        <img src="${fig.image}" alt="${fig.nom}">
+                        <h3>${fig.nom}</h3>
+                        <p>${fig.serie}</p>
+                        <button class="delete-btn" onclick="supprimerFigurine('${cat}', ${indexReel})">Supprimer</button>
+                    </div>
+                `;
             });
+            conteneur.innerHTML = htmlContent;
+        });
+    };
 
-            // Gestion du bouton de réinitialisation
-            const resetButton = document.getElementById('resetButton');
-            resetButton.addEventListener('click', () => {
-                searchInput.value = '';
-                initialiserAffichage();
-            });
-        })
-        .catch(error => console.error('Erreur lors du chargement des données :', error));
+    // Supprimer une figurine
+    window.supprimerFigurine = (categorie, index) => {
+        if (confirm("Voulez-vous vraiment supprimer cette figurine ?")) {
+            collectionData[categorie].splice(index, 1);
+            localStorage.setItem('schtroumpfs_data', JSON.stringify(collectionData));
+            afficherFigurines(document.getElementById('searchInput').value);
+        }
+    };
+
+    // Initialisation au chargement de la page
+    chargerDonnees().then(data => {
+        collectionData = data;
+        afficherFigurines();
+    });
+
+    // Gestion du formulaire d'ajout
+    document.getElementById('addForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nouvelleFigurine = {
+            nom: document.getElementById('nom').value,
+            serie: document.getElementById('serie').value,
+            image: document.getElementById('image').value
+        };
+        const categorie = document.getElementById('categorie').value;
+
+        collectionData[categorie].push(nouvelleFigurine);
+        localStorage.setItem('schtroumpfs_data', JSON.stringify(collectionData));
+        
+        afficherFigurines();
+        document.getElementById('addForm').reset();
+    });
+
+    // Recherche en direct
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        afficherFigurines(e.target.value);
+    });
+
+    // Bouton de réinitialisation
+    document.getElementById('resetButton').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        afficherFigurines();
+    });
 </script>
 </body>
 </html>
