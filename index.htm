@@ -21,20 +21,17 @@
 
     <h1>Ma Collection de Schtroumpfs Schleich</h1>
     
-    <!-- Conteneur global pour les contrôles -->
     <div>
-        <!-- Barre de recherche -->
         <div class="search-container">
             <h3>Recherche</h3>
             <input type="text" id="searchInput" placeholder="Rechercher une figurine..."><br>
             <button id="resetButton">Réinitialiser</button>
         </div>
 
-        <!-- Formulaire d'ajout -->
         <div class="form-container">
             <h3>Ajouter une figurine</h3>
             <form id="addForm">
-                <input type="text" id="nom" placeholder="Nom (ex: Schtroumpf...)" required><br>
+                <input type="text" id="nom" placeholder="Nom (ex: 20003 Schtroumpf...)" required><br>
                 <input type="url" id="image" placeholder="URL de l'image" required><br>
                 <select id="categorie">
                     <option value="possedees">Possédée</option>
@@ -123,7 +120,7 @@
         e.preventDefault();
         const nouvelleFigurine = {
             nom: document.getElementById('nom').value,
-            serie: document.getElementById('serie').value,
+            serie: "Schtroumpfs Schleich", // Attribué automatiquement ici
             image: document.getElementById('image').value
         };
         const categorie = document.getElementById('categorie').value;
