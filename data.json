@@ -1,0 +1,41 @@
+{
+    "possedees": [
+        {
+            "nom": "20001 Grand-Schtroumpf",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/201804/30/figurines-schtroumpfs-grand-schtroumpf-20001-002_250x250.webp"
+        },
+        {
+            "nom": "20002 Schtroumpf normal",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/201804/30/figurines-schtroumpfs-normal-20002-002_250x250.webp"
+        },
+        {
+            "nom": "20004 Schtroumpf Hiver écharpe Jaune",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/201712/05/figurines-schtroumpfs-copy-schtroumpf-hiver-20004_250x250.webp"
+        }
+    ],
+    "recherches": [
+        {
+            "nom": "20018 Schtroumpf pleureur",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/20160310/schtroumpfs-schtroumpf-pleureur-20018_250x250.webp"
+        },
+        {
+            "nom": "20003 Cosmo Schtroumpf",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/20160310/schtroumpfs-cosmo-schtroumpf-20003_250x250.webp"
+        },
+        {
+            "nom": "20019 Schtroumpf fleur",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/201804/30/figurines-schtroumpfs-schtroumpf-fleur-20019_wgwhb_250x250.webp"
+        },
+        {
+            "nom": "20021 Schtroumpf somnambule",
+            "serie": "Schtroumpfs Schleich",
+            "image": "https://thumbs.coleka.com/media/item/20160310/schtroumpfs-schtroumpf-somnambule-20021_250x250.webp"
+        }
+    ]
+}
