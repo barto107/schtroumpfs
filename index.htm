@@ -31,19 +31,25 @@
         <div class="grid" id="grid-recherches"></div>
     </div>
 
-    <script>
+<script>
         fetch('./data.json')
             .then(response => response.json())
             .then(data => {
-                const afficherFigurines = (liste, elementId) => {
+                const afficherFigurines = (liste, elementId, filtre = '') => {
                     const conteneur = document.getElementById(elementId);
-                    if (liste.length === 0) {
-                        conteneur.innerHTML = '<p>Aucune figurine pour le moment.</p>';
+                    
+                    const listeFiltree = liste.filter(fig => 
+                        fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
+                        fig.serie.toLowerCase().includes(filtre.toLowerCase())
+                    );
+
+                    if (listeFiltree.length === 0) {
+                        conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
                         return;
                     }
                     
                     let htmlContent = '';
-                    liste.forEach(fig => {
+                    listeFiltree.forEach(fig => {
                         htmlContent += `
                             <div class="card">
                                 <img src="${fig.image}" alt="${fig.nom}">
@@ -55,8 +61,26 @@
                     conteneur.innerHTML = htmlContent;
                 };
 
-                afficherFigurines(data.possedees, 'grid-possedees');
-                afficherFigurines(data.recherches, 'grid-recherches');
+                const initialiserAffichage = (filtre = '') => {
+                    afficherFigurines(data.possedees, 'grid-possedees', filtre);
+                    afficherFigurines(data.recherches, 'grid-recherches', filtre);
+                };
+
+                // Affichage initial
+                initialiserAffichage();
+
+                // Gestion de la recherche en direct
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', (e) => {
+                    initialiserAffichage(e.target.value);
+                });
+
+                // Gestion du bouton de réinitialisation
+                const resetButton = document.getElementById('resetButton');
+                resetButton.addEventListener('click', () => {
+                    searchInput.value = '';
+                    initialiserAffichage();
+                });
             })
             .catch(error => console.error('Erreur lors du chargement des données :', error));
     </script>
