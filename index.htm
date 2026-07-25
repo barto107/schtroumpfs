@@ -27,7 +27,7 @@
     </div>
 
     <script>
-        fetch('data.json')
+        fetch('./data.json')
             .then(response => response.json())
             .then(data => {
                 const afficherFigurines = (liste, elementId) => {
@@ -36,8 +36,10 @@
                         conteneur.innerHTML = '<p>Aucune figurine pour le moment.</p>';
                         return;
                     }
+                    
+                    let htmlContent = '';
                     liste.forEach(fig => {
-                        conteneur.innerHTML += `
+                        htmlContent += `
                             <div class="card">
                                 <img src="${fig.image}" alt="${fig.nom}">
                                 <h3>${fig.nom}</h3>
@@ -45,6 +47,7 @@
                             </div>
                         `;
                     });
+                    conteneur.innerHTML = htmlContent;
                 };
 
                 afficherFigurines(data.possedees, 'grid-possedees');
