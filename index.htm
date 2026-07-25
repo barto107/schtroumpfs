@@ -32,10 +32,11 @@
             <h3>Ajouter une figurine</h3>
             <form id="addForm">
                 <input type="text" id="nom" placeholder="Nom (ex: 20003 Schtroumpf...)" required><br>
+                <input type="text" id="serie" placeholder="Série (ex: Classique)" required><br>
                 <input type="url" id="image" placeholder="URL de l'image" required><br>
                 <select id="categorie">
-                <option value="possedees">Possédée</option>
-                <option value="recherches" selected>Recherchée</option>
+                    <option value="possedees">Possédée</option>
+                    <option value="recherches" selected>Recherchée</option>
                 </select><br>
                 <button type="submit">Ajouter</button>
             </form>
@@ -77,10 +78,11 @@
             const conteneur = document.getElementById(`grid-${cat}`);
             const liste = collectionData[cat] || [];
             
-            const listeFiltree = liste.filter(fig => 
-                fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
-                fig.serie.toLowerCase().includes(filtre.toLowerCase())
-            );
+            const listeFiltree = liste.filter(fig => {
+                const nomMatch = fig.nom && fig.nom.toLowerCase().includes(filtre.toLowerCase());
+                const serieMatch = fig.serie && fig.serie.toLowerCase().includes(filtre.toLowerCase());
+                return nomMatch || serieMatch;
+            });
 
             if (listeFiltree.length === 0) {
                 conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
@@ -94,7 +96,7 @@
                     <div class="card">
                         <img src="${fig.image}" alt="${fig.nom}">
                         <h3>${fig.nom}</h3>
-                        <p>${fig.serie}</p>
+                        <p>${fig.serie || ''}</p>
                         <button class="delete-btn" onclick="supprimerFigurine('${cat}', ${indexReel})">Supprimer</button>
                     </div>
                 `;
@@ -120,7 +122,7 @@
         e.preventDefault();
         const nouvelleFigurine = {
             nom: document.getElementById('nom').value,
-            serie: "Schtroumpfs Schleich", // Attribué automatiquement ici
+            serie: document.getElementById('serie').value,
             image: document.getElementById('image').value
         };
         const categorie = document.getElementById('categorie').value;
@@ -130,6 +132,9 @@
         
         afficherFigurines();
         document.getElementById('addForm').reset();
+        
+        // S'assure que le menu déroulant revient ou reste bien sur "Recherchée" après l'ajout si désiré
+        document.getElementById('categorie').value = 'recherches';
     });
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
