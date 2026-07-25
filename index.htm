@@ -32,57 +32,57 @@
     </div>
 
 <script>
-        fetch('./data.json')
-            .then(response => response.json())
-            .then(data => {
-                const afficherFigurines = (liste, elementId, filtre = '') => {
-                    const conteneur = document.getElementById(elementId);
-                    
-                    const listeFiltree = liste.filter(fig => 
-                        fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
-                        fig.serie.toLowerCase().includes(filtre.toLowerCase())
-                    );
+    fetch('./data.json')
+        .then(response => response.json())
+        .then(data => {
+            const afficherFigurines = (liste, elementId, filtre = '') => {
+                const conteneur = document.getElementById(elementId);
+                
+                const listeFiltree = liste.filter(fig => 
+                    fig.nom.toLowerCase().includes(filtre.toLowerCase()) || 
+                    fig.serie.toLowerCase().includes(filtre.toLowerCase())
+                );
 
-                    if (listeFiltree.length === 0) {
-                        conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
-                        return;
-                    }
-                    
-                    let htmlContent = '';
-                    listeFiltree.forEach(fig => {
-                        htmlContent += `
-                            <div class="card">
-                                <img src="${fig.image}" alt="${fig.nom}">
-                                <h3>${fig.nom}</h3>
-                                <p>${fig.serie}</p>
-                            </div>
-                        `;
-                    });
-                    conteneur.innerHTML = htmlContent;
-                };
+                if (listeFiltree.length === 0) {
+                    conteneur.innerHTML = '<p>Aucune figurine trouvée.</p>';
+                    return;
+                }
+                
+                let htmlContent = '';
+                listeFiltree.forEach(fig => {
+                    htmlContent += `
+                        <div class="card">
+                            <img src="${fig.image}" alt="${fig.nom}">
+                            <h3>${fig.nom}</h3>
+                            <p>${fig.serie}</p>
+                        </div>
+                    `;
+                });
+                conteneur.innerHTML = htmlContent;
+            };
 
-                const initialiserAffichage = (filtre = '') => {
-                    afficherFigurines(data.possedees, 'grid-possedees', filtre);
-                    afficherFigurines(data.recherches, 'grid-recherches', filtre);
-                };
+            const initialiserAffichage = (filtre = '') => {
+                afficherFigurines(data.possedees || [], 'grid-possedees', filtre);
+                afficherFigurines(data.recherches || [], 'grid-recherches', filtre);
+            };
 
-                // Affichage initial
+            // Affichage initial
+            initialiserAffichage();
+
+            // Gestion de la recherche en direct
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                initialiserAffichage(e.target.value);
+            });
+
+            // Gestion du bouton de réinitialisation
+            const resetButton = document.getElementById('resetButton');
+            resetButton.addEventListener('click', () => {
+                searchInput.value = '';
                 initialiserAffichage();
-
-                // Gestion de la recherche en direct
-                const searchInput = document.getElementById('searchInput');
-                searchInput.addEventListener('input', (e) => {
-                    initialiserAffichage(e.target.value);
-                });
-
-                // Gestion du bouton de réinitialisation
-                const resetButton = document.getElementById('resetButton');
-                resetButton.addEventListener('click', () => {
-                    searchInput.value = '';
-                    initialiserAffichage();
-                });
-            })
-            .catch(error => console.error('Erreur lors du chargement des données :', error));
-    </script>
+            });
+        })
+        .catch(error => console.error('Erreur lors du chargement des données :', error));
+</script>
 </body>
 </html>
