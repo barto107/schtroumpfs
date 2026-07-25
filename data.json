@@ -1,4 +1,16 @@
 {
-  "possedees": [],
-  "recherches": []
+  "possedees": [
+    {
+      "nom": "20001 Grand-Schtroumpf",
+      "serie": "Schtroumpfs Schleich",
+      "image": "https://thumbs.coleka.com/media/item/201804/30/figurines-schtroumpfs-grand-schtroumpf-20001-002_250x250.webp"
+    }
+  ],
+  "recherches": [
+    {
+      "nom": "20018 Schtroumpf pleureur",
+      "serie": "Schtroumpfs Schleich",
+      "image": "https://thumbs.coleka.com/media/item/20160310/schtroumpfs-schtroumpf-pleureur-20018_250x250.webp"
+    }
+  ]
 }
